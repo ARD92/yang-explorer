@@ -38,10 +38,12 @@ class Parser(object):
         if not os.path.exists(filename):
             return
 
-        module_re = re.compile("""^\s*[sub]*module\s+['"]?\s*([\w+[\-\w+]+)\s*['"]?\s*""")
+
+        module_re = re.compile("""^\s*[sub]*module\s+['"]?\s*([\.+\w+[\-\w+]+)\s*['"]?\s*""")
         revision_re = re.compile("""^\s*revision\s+['"]?\s*(\w+-\w+-\w+)\s*['"]?\s*""")
-        import_re = re.compile("""^\s*import\s+['"]?\s*([\w+[\-\w+]+)\s*['"]?\s*""")
-        include_re = re.compile("""^\s*include\s+['"]?\s*([\w+[\-\w+]+)\s*['"]?\s*""")
+        import_re = re.compile("""^\s*import\s+['"]?\s*([\.\w+[\-\w+]+)\s*['"]?\s*""")
+        include_re = re.compile("""^\s*include\s+['"]?\s*(\.[\w+[\-\w+]+)\s*['"]?\s*""") 
+
 
         with open(filename, 'r') as f:
             for line in f:
@@ -108,7 +110,7 @@ class Compiler(object):
             return False, None
 
         basename = os.path.basename(filename)
-        modulename = basename.split('.')[0].strip()
+        modulename = basename.split('.yang')[0].strip()
 
         session_dir = ''
         if session is not None:
@@ -127,7 +129,7 @@ class Compiler(object):
             logging.debug("compile_cxml: " + yangfile + ' not found !!')
             return False, ["Yang module %s not found on server !!" % modulename]
 
-        command = ['pyang', '-f', 'cxml', '--plugindir', 'explorer/plugins', '-p']
+        command = ['pyang', '-f', 'cxml', '--ignore-error', '--plugindir', 'explorer/plugins', '-p']
 
         # include path for pyang compilation
         includes = ServerSettings.yang_path(username)
@@ -193,7 +195,7 @@ class Compiler(object):
             logging.debug('compile_pyimport: No yang file found !!')
             return True, ET.Element('messages')
 
-        command = ['pyang', '-f', 'pyimport', '--plugindir', 'explorer/plugins', '-p']
+        command = ['pyang', '-f', 'pyimport', '--ignore-error','--plugindir', 'explorer/plugins', '-p']
         command += [':'.join(includes)]
         command += target_yangs
 

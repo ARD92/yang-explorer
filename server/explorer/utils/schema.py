@@ -111,8 +111,8 @@ def download_helper(username, device, dest, rpc, models):
     # dowload all models in the list
     for modelname in models:
         identifier.text = modelname.split('@')[0]
-        fname = os.path.join(dest, identifier.text + '.yang')
-
+       # fname = os.path.join(dest, identifier.text + '.yang')
+        fname = os.path.join(dest, modelname + '.yang')  
         if not os.path.exists(fname):
             schema = Adapter.run_netconf(username, device, rpc)
 
@@ -121,7 +121,7 @@ def download_helper(username, device, dest, rpc, models):
                 f.write(schema[0][0].text)
 
             # calculate dependency
-            parser = Parser(fname)
+            parser = Parser(modelname)
             dep_models |= set(parser.get_dependency())
 
     # recursively download dependency

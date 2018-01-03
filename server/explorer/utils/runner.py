@@ -102,22 +102,22 @@ class NCClient(object):
         datastore = parser.get_datastore()
         try:
             if op == 'get':
-                response = self.handle.get(data).xml
+                response = self.handle.get(data).data_xml
             elif op == 'get-config':
-                response = self.handle.get_config(source=datastore, filter=data).xml
+                response = self.handle.get_config(source=datastore, filter=data).data_xml
             elif op == 'edit-config':
                 eoption = parser.get_error_option()
                 if lock:
                     with self.handle.locked(datastore):
                         response = self.handle.edit_config(target=datastore,
                                                            error_option=eoption,
-                                                           config=data).xml
+                                                           config=data).data_xml
                 else:
                     response = self.handle.edit_config(target=datastore,
                                                 error_option=eoption,
-                                                config=data).xml
+                                                config=data).data_xml
             else:
-                response = self.handle.dispatch(ET.fromstring(data)).xml
+                response = self.handle.dispatch(ET.fromstring(data)).data_xml
             """
             reply = 'NETCONF REQUEST:\n'
             reply += '================\n\n'
